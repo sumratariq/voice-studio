@@ -1,7 +1,7 @@
 import streamlit as st
 import requests
 
-BACKEND_URL = "https://modal.com/apps/sumratariq/main/ap-0bL0VThkEm3uxPJgbY7iUr"
+BACKEND_URL = "https://modal.com/apps/sumratariq/main/deployed/voice-studio"
 
 st.title("Voice Studio")
 tab1, tab2, tab3 = st.tabs(["Text-to-Speech", "Voice Cloning", "Voice Mixing"])
