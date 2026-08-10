@@ -54,14 +54,37 @@ st.title("Voice Studio")
 
 tab1, tab2, tab3 = st.tabs(["Text-to-Speech", "Voice Cloning", "Voice Mixing"])
 
+MALE_VOICES = {
+    "Andrew": "Andrew Chipper",
+    "Badr": "Badr Odhiambo",
+    "Dionisio": "Dionisio Schuyler",
+    "Royston": "Royston Min",
+    "Viktor": "Viktor Eka",
+    "Damien": "Damien Black",
+}
+
+FEMALE_VOICES = {
+    "Claribel": "Claribel Dervla",
+    "Daisy": "Daisy Studious",
+    "Gracie": "Gracie Wise",
+    "Alison": "Alison Dietlinde",
+    "Ana": "Ana Florence",
+    "Sofia": "Sofia Hellen",
+}
+
 with tab1:
     text = st.text_area("Text", key="tts_text")
+
+    gender = st.radio("Voice type", ["Male", "Female"], key="tts_gender", horizontal=True)
+    voice_options = MALE_VOICES if gender == "Male" else FEMALE_VOICES
+    display_name = st.selectbox("Choose a voice", list(voice_options.keys()), key="tts_voice")
+    actual_speaker = voice_options[display_name]
+
     if st.button("Generate", key="tts_btn"):
-        res = requests.post(f"{BACKEND_URL}/tts", data={"text": text})
+        res = requests.post(f"{BACKEND_URL}/tts", data={"text": text, "speaker": actual_speaker})
         with open("tts_out.wav", "wb") as f:
             f.write(res.content)
         st.audio("tts_out.wav")
-
 with tab2:
     text = st.text_area("Text", key="clone_text")
     voice_file = st.file_uploader("Voice sample", key="clone_file")
