@@ -4,6 +4,42 @@ from auth import sign_up, sign_in, sign_out
 from library import save_to_library, get_library, delete_from_library
 
 st.set_page_config(page_title="Voice Studio", layout="wide")
+st.markdown("""
+<style>
+    .stButton > button {
+        border-radius: 8px;
+        font-weight: 600;
+        padding: 0.5rem 1.5rem;
+        transition: all 0.2s ease;
+    }
+    .stButton > button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+    }
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 8px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        border-radius: 8px 8px 0 0;
+        padding: 10px 20px;
+    }
+    div[data-testid="stAudio"] {
+        margin-top: 0.5rem;
+    }
+    .app-header {
+        text-align: center;
+        padding: 1rem 0 2rem 0;
+    }
+    .app-header h1 {
+        font-size: 2.5rem;
+        margin-bottom: 0.2rem;
+    }
+    .app-header p {
+        color: #A0A0B0;
+        font-size: 1rem;
+    }
+</style>
+""", unsafe_allow_html=True)
 
 BACKEND_URL = "https://sumratariq--voice-studio-fastapi-app.modal.run"
 
@@ -12,29 +48,37 @@ if "user" not in st.session_state:
     st.session_state.user = None
 
 def login_signup_screen():
-    st.title("Welcome to Voice Studio")
-    tab1, tab2 = st.tabs(["Log In", "Sign Up"])
+    st.markdown("""
+    <div class="app-header">
+        <h1>🎙️ Voice Studio</h1>
+        <p>Your personal AI voice lab</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-    with tab1:
-        email = st.text_input("Email", key="login_email")
-        password = st.text_input("Password", type="password", key="login_pw")
-        if st.button("Log In"):
-            try:
-                result = sign_in(email, password)
-                st.session_state.user = result.user
-                st.rerun()
-            except Exception as e:
-                st.error(f"Login failed: {e}")
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        tab1, tab2 = st.tabs(["Log In", "Sign Up"])
 
-    with tab2:
-        email = st.text_input("Email", key="signup_email")
-        password = st.text_input("Password", type="password", key="signup_pw")
-        if st.button("Sign Up"):
-            try:
-                sign_up(email, password)
-                st.success("Account created! Check your email to confirm, then log in.")
-            except Exception as e:
-                st.error(f"Signup failed: {e}")
+        with tab1:
+            email = st.text_input("Email", key="login_email", placeholder="you@example.com")
+            password = st.text_input("Password", type="password", key="login_pw", placeholder="••••••••")
+            if st.button("Log In", key="login_submit", use_container_width=True):
+                try:
+                    result = sign_in(email, password)
+                    st.session_state.user = result.user
+                    st.rerun()
+                except Exception as e:
+                    st.error(f"Login failed: {e}")
+
+        with tab2:
+            email = st.text_input("Email", key="signup_email", placeholder="you@example.com")
+            password = st.text_input("Password", type="password", key="signup_pw", placeholder="••••••••")
+            if st.button("Sign Up", key="signup_submit", use_container_width=True):
+                try:
+                    sign_up(email, password)
+                    st.success("Account created! Check your email to confirm, then log in.")
+                except Exception as e:
+                    st.error(f"Signup failed: {e}")
 
 # Gate the whole app behind login
 if st.session_state.user is None:
@@ -44,14 +88,19 @@ if st.session_state.user is None:
 # ---- Everything below only runs once the user is logged in ----
 
 with st.sidebar:
-    st.subheader("Profile")
-    st.write(f"📧 {st.session_state.user.email}")
-    if st.button("Log Out"):
+    st.markdown("### 👤 Profile")
+    st.markdown(f"**{st.session_state.user.email}**")
+    st.divider()
+    if st.button("Log Out", use_container_width=True):
         sign_out()
         st.session_state.user = None
         st.rerun()
-
-st.title("Voice Studio")
+st.markdown("""
+<div class="app-header">
+    <h1>🎙️ Voice Studio</h1>
+    <p>Generate, clone, and mix voices — powered by AI</p>
+</div>
+""", unsafe_allow_html=True)
 
 tab1, tab2, tab3, tab4 = st.tabs(["Text-to-Speech", "Voice Cloning", "Voice Mixing", "My Library"])
 MALE_VOICES = {
